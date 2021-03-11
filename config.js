@@ -1,18 +1,18 @@
 const {
-  TIMEZONE = 'America/Buenos_Aires',
   DB_USER,
   DB_NAME,
   DB_PASS,
-  DB_INSTANCE,
+  DB_SOCKET_PATH,
+  CLOUD_SQL_CONNECTION_NAME,
 } = process.env;
 
+const dbSocketPath = DB_SOCKET_PATH || '/cloudsql';
+
 module.exports = {
-  TIMEZONE,
-  DB_CONNECTION: `mysql://${DB_USER}:${DB_PASS}@${DB_INSTANCE}:3306/${DB_NAME}`,
   databaseConfig: {
     client: 'mysql',
     connection: {
-      host : DB_INSTANCE,
+      socketPath : `${dbSocketPath}/${CLOUD_SQL_CONNECTION_NAME}`,
       user : DB_USER,
       password : DB_PASS,
       database : DB_NAME
