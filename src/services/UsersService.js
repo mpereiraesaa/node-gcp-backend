@@ -8,8 +8,14 @@ const UserRolesRepository = require('../repositories/UserRolesRepository');
 const { TOKEN_EXPIRATION_TIME } = process.env;
 const HOURS_TO_SECS = 3600;
 
-UsersService.register = (userData) => {
+UsersService.register = async (userData) => {
   const { password2, ...data } = userData;
+
+  const existingUser = await UsersRepository.find({ email: data?.email });
+
+  if (!!existingUser) {
+    throw new Error('Already existing user');
+  }
 
   if (data.password !== password2) {
     throw new Error ('Password mismatch');
