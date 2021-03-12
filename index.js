@@ -16,9 +16,9 @@ app.use(bodyParser.json());
 app.use('/api', routes);
 
 app.use((error, req, res, next) => {
-  const { status = 500, message = 'Error', code = 500 } = error;
+  const { status = 500, message = 'Error', code = 500 } = error || {};
 
-  return res.status(status).send({ error: { message, code } });
+  return res.sendStatus(status).send({ message, code, status });
 });
 
 app.listen(PORT, (err) => {

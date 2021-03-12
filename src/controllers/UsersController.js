@@ -10,7 +10,7 @@ UsersController.register = (req, res, next) => {
   }
 
   return UsersService.register({ ...body, image: req.file.cloudStoragePublicUrl })
-    .then((newUser) => res.send(newUser))
+    .then(() => res.send({ success: true }))
     .catch((err) => {
       console.error(err);
       return next(err);

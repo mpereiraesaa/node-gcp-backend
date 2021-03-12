@@ -9,7 +9,13 @@ const { TOKEN_EXPIRATION_TIME } = process.env;
 const HOURS_TO_SECS = 3600;
 
 UsersService.register = (userData) => {
-  return UsersRepository.create(userData);
+  const { password2, ...data } = userData;
+
+  if (data.password !== password2) {
+    throw new Error ('Password mismatch');
+  }
+
+  return UsersRepository.create(data);
 };
 
 UsersService.login = async (email, password) => {
@@ -25,11 +31,15 @@ UsersService.login = async (email, password) => {
   return {
     accessToken: JwtService.generateToken({ userId, isAdmin: role === ADMIN }),
     expiresIn: TOKEN_EXPIRATION_TIME * HOURS_TO_SECS,
+    userId: userId,
   };
 };
 
-UsersService.getUserProfile = (userId) => {
-  return UsersRepository.find({ id: userId });
+UsersService.getUserProfile = async (userId) => {
+  const user = await UsersRepository.find({ id: userId });
+  const role = await UserRolesRepository.getUserRole(userId);
+  delete user.password;
+  return { ...user, is_admin: role === ADMIN };
 };
 
 UsersService.getAllUsers = () => {
