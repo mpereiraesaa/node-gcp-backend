@@ -9,7 +9,7 @@ const { TOKEN_EXPIRATION_TIME } = process.env;
 const HOURS_TO_SECS = 3600;
 
 UsersService.register = async (userData) => {
-  const { password2, ...data } = userData;
+  const { password, password2, ...data } = userData;
 
   const existingUser = await UsersRepository.find({ email: data?.email });
 
@@ -17,11 +17,13 @@ UsersService.register = async (userData) => {
     throw new Error('Already existing user');
   }
 
-  if (data.password !== password2) {
+  if (password !== password2) {
     throw new Error ('Password mismatch');
   }
 
-  return UsersRepository.create(data);
+  const hashedPassword = await JwtService.hashSecret(password);
+
+  return UsersRepository.create({ ...data, password: hashedPassword});
 };
 
 UsersService.login = async (email, password) => {
