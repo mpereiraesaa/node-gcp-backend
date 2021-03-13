@@ -18,9 +18,9 @@ UsersController.register = (req, res, next) => {
 };
 
 UsersController.login = (req, res, next) => {
-  const { body: { email, password } } = req;
+  const { body: { email, password = '' } } = req;
 
-  if (!email || !password) {
+  if (!email) {
     throw new Error('Invalid credentials');
   }
 

@@ -4,6 +4,7 @@ const JwtService = require('../utils/JwtService');
 const { ADMIN } = require('../utils/Roles');
 const UsersRepository = require('../repositories/UsersRepository');
 const UserRolesRepository = require('../repositories/UserRolesRepository');
+const ConfigurationsRepository = require('../repositories/ConfigurationsRepository');
 
 const { TOKEN_EXPIRATION_TIME } = process.env;
 const HOURS_TO_SECS = 3600;
@@ -27,19 +28,29 @@ UsersService.register = async (userData) => {
 };
 
 UsersService.login = async (email, password) => {
-  const { password: hashedPassword, id: userId } = await UsersRepository.find({ email });
-  const isValid = await JwtService.compare(password, hashedPassword);
+  let configurations = await ConfigurationsRepository.findAll();
 
-  if (!isValid) {
-    throw new Error('Invalid password');
-  }
+  configurations = configurations.reduce((acc, { value }) => {
+    return { ...acc, ...JSON.parse(value) };
+  }, {});
 
+  const { disable_passwd: disablePasswd } = configurations;
+  const user = await UsersRepository.find({ email });
   const role = await UserRolesRepository.getUserRole(userId);
 
+  if (!disablePasswd) {
+    const { password: hashedPassword } = user;
+    const isValid = await JwtService.compare(password, hashedPassword);
+
+    if (!isValid) {
+      throw new Error('Invalid password');
+    }   
+  }
+
   return {
-    accessToken: JwtService.generateToken({ userId, isAdmin: role === ADMIN }),
+    accessToken: JwtService.generateToken({ userId: user.id, isAdmin: role === ADMIN }),
     expiresIn: TOKEN_EXPIRATION_TIME * HOURS_TO_SECS,
-    userId: userId,
+    userId: user.id,
   };
 };
 
