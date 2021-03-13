@@ -98,5 +98,8 @@ UsersService.getUserProfile = async (userId) => {
 
 UsersService.getAllUsers = async () => {
   const users = await UsersRepository.findAll();
-  return users.map(({ password, ...user}) => user);
+  return users.map(({ password, birth, ...user}) => ({
+    ...user,
+    birth: moment(birth).format('YYYY-MM-DD'),
+  }));
 };
