@@ -25,7 +25,7 @@ UsersController.login = (req, res, next) => {
   }
 
   return UsersService.login(email, password)
-    .then((loggedUser) => res.send(loggedUser))
+    .then((data) => res.send(data))
     .catch((err) => {
       console.error(err);
       return next(err);

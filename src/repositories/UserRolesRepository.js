@@ -17,4 +17,4 @@ UserRolesRepository.getUserRole = (userId) => db
   })
   .where(`${USERS_TABLE}.id`, '=', userId)
   .first()
-  .then(({ name }) => name);
+  .then(({ name } = {}) => name);

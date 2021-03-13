@@ -36,7 +36,12 @@ UsersService.login = async (email, password) => {
 
   const { disable_passwd: disablePasswd } = configurations;
   const user = await UsersRepository.find({ email });
-  const role = await UserRolesRepository.getUserRole(userId);
+
+  if (!user || !user.id) {
+    throw new Error('Email not registered');
+  }
+
+  const role = await UserRolesRepository.getUserRole(user.id);
 
   if (!disablePasswd) {
     const { password: hashedPassword } = user;
@@ -47,8 +52,10 @@ UsersService.login = async (email, password) => {
     }   
   }
 
+  const accessToken = JwtService.generateToken({ userId: user.id, isAdmin: role === ADMIN });
+
   return {
-    accessToken: JwtService.generateToken({ userId: user.id, isAdmin: role === ADMIN }),
+    accessToken,
     expiresIn: TOKEN_EXPIRATION_TIME * HOURS_TO_SECS,
     userId: user.id,
   };

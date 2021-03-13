@@ -18,7 +18,7 @@ app.use('/api', routes);
 app.use((error, req, res, next) => {
   const { status = 500, message = 'Error', code = 500 } = error || {};
 
-  return res.sendStatus(status).send({ message, code, status });
+  return res.status(status).json({ message, code, status });
 });
 
 app.listen(PORT, (err) => {
