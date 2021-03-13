@@ -50,6 +50,7 @@ UsersService.getUserProfile = async (userId) => {
   return { ...user, is_admin: role === ADMIN };
 };
 
-UsersService.getAllUsers = () => {
-  return UsersRepository.findAll();
+UsersService.getAllUsers = async () => {
+  const users = await UsersRepository.findAll();
+  return users.map(({ password, ...user}) => user);
 };
