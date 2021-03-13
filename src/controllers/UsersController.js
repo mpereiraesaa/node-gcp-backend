@@ -32,6 +32,21 @@ UsersController.login = (req, res, next) => {
     });
 };
 
+UsersController.getLoggedUser = (req, res, next) => {
+  const authorization = req.header('Authorization');
+
+  if (!authorization) {
+    throw new Error('Invalid token');
+  }
+
+  return UsersService.getLoggedUser(authorization)
+    .then((data) => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      return next(err);
+    });
+};
+
 UsersController.getUserProfile = (req, res, next) => {
   const { params: { userId } } = req;
 

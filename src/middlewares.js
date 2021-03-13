@@ -61,7 +61,7 @@ AppMiddleware.adminAccess = ((req, res, next) => {
 
     if (isAdmin) return next();
   } catch (err) {
-    throw new UnauthorizedError('unauthorized');
+    throw new Error('unauthorized');
   }
 });
 
@@ -77,6 +77,6 @@ AppMiddleware.userAccess = ((req, res, next) => {
 
     if (userId) return next();
   } catch (err) {
-    throw new UnauthorizedError('unauthorized');
+    throw new Error('unauthorized');
   }
 });

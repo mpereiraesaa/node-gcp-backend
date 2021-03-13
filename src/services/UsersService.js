@@ -1,5 +1,6 @@
 const UsersService = module.exports;
 
+const moment = require('moment-timezone');
 const JwtService = require('../utils/JwtService');
 const { ADMIN } = require('../utils/Roles');
 const UsersRepository = require('../repositories/UsersRepository');
@@ -61,11 +62,38 @@ UsersService.login = async (email, password) => {
   };
 };
 
+UsersService.getLoggedUser = async (accessToken) => {
+  try {
+    const { isAdmin, userId } = JwtService.verifyToken(accessToken);
+    const user = await UsersRepository.find({ id: userId });
+
+    const { birth, password, ...cleanedUser } = user;
+
+    const formattedBirthDate = moment(birth).format('YYYY-MM-DD');
+
+    return {
+      ...cleanedUser,
+      birth: formattedBirthDate,
+      is_admin: isAdmin,
+    };
+  } catch (err) {
+    throw new Error('unauthorized');
+  }
+};
+
 UsersService.getUserProfile = async (userId) => {
   const user = await UsersRepository.find({ id: userId });
   const role = await UserRolesRepository.getUserRole(userId);
-  delete user.password;
-  return { ...user, is_admin: role === ADMIN };
+
+  const { birth, password, ...cleanedUser } = user;
+
+  const formattedBirthDate = moment(birth).format('YYYY-MM-DD');
+
+  return {
+    ...cleanedUser,
+    birth: formattedBirthDate,
+    is_admin: role === ADMIN,
+  };
 };
 
 UsersService.getAllUsers = async () => {

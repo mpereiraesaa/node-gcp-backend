@@ -12,5 +12,6 @@ router.get('/profile/:userId(\\d+)', userAccess, UsersController.getUserProfile)
 router.get('/profiles', adminAccess, UsersController.getAllUsers);
 router.put('/configurations/:configurationId(\\d+)', adminAccess, ConfigurationsController.update);
 router.get('/configurations', ConfigurationsController.getAll);
+router.get('/info', UsersController.getLoggedUser);
 
 module.exports = router;
