@@ -48,9 +48,12 @@ UsersController.getLoggedUser = (req, res, next) => {
 };
 
 UsersController.getUserProfile = (req, res, next) => {
+  const authorization = req.header('Authorization');
   const { params: { userId } } = req;
 
-  return UsersService.getUserProfile(userId)
+  const options = { authorization };
+
+  return UsersService.getUserProfile(userId, options)
     .then((user) => res.send(user))
     .catch((err) => {
       console.error(err);

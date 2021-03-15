@@ -81,7 +81,15 @@ UsersService.getLoggedUser = async (accessToken) => {
   }
 };
 
-UsersService.getUserProfile = async (userId) => {
+UsersService.getUserProfile = async (userId, options) => {
+  const { authorization = '' } = options;
+
+  const { isAdmin, userId: authUserId } = JwtService.verifyToken(authorization);
+
+  if (!isAdmin && userId !== authUserId.toString()) {
+    throw new Error('Unauthorized');
+  }
+
   const user = await UsersRepository.find({ id: userId });
   const role = await UserRolesRepository.getUserRole(userId);
 
