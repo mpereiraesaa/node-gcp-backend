@@ -77,7 +77,7 @@ UsersService.getLoggedUser = async (accessToken) => {
       is_admin: isAdmin,
     };
   } catch (err) {
-    throw new Error('unauthorized');
+    return { sessionHasExpired: true };
   }
 };
 
